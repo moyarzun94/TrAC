@@ -9,6 +9,7 @@ import {
   IStudentAdmission,
   IStudentEmployed,
   STUDENT_PROGRAM_TABLE,
+  STUDENT_ADMISSION_TABLE,
   STUDENT_TABLE,
   StudentAdmissionTable,
   StudentDropoutTable,
@@ -200,3 +201,42 @@ export const StudentListDataLoader = new DataLoader(
     cacheMap: new LRUMap(1000),
   }
 );
+
+export const StudentListFilterDataLoader = new DataLoader(
+  async (
+    keys: readonly {
+      program_id: string;
+      curriculum: string;
+    }[]
+  ) => {
+    return await Promise.all(
+      keys.map(({ program_id, curriculum }) => {
+        return StudentProgramTable()
+          .select("*")
+          .join<IStudent>(
+            STUDENT_TABLE,
+            `${STUDENT_PROGRAM_TABLE}.student_id`,
+            `${STUDENT_TABLE}.id`
+          )
+          .join<IStudent>(
+            STUDENT_ADMISSION_TABLE,
+            `${STUDENT_PROGRAM_TABLE}.student_id`,
+            `${STUDENT_ADMISSION_TABLE}.student_id`
+          )
+          .where({
+            program_id,
+            curriculum,
+          });
+      })
+    );
+  },
+  {
+    cacheMap: new LRUMap(1000),
+  }
+);
+
+/* 
+select B.id,program_id,curriculum, B.name, B.state from student_program as A  join student as B 
+on A.student_id=B.id and program_id='1708' and curriculum='2017' join student_admission as C on
+B.id = C.student_id;
+ */

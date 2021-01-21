@@ -125,7 +125,8 @@ export function Dashboard() {
       data: searchStudentData,
       loading: searchStudentLoading,
       error: searchStudentError,
-    },
+    },useStudentsFilterListQuery
+    
   ] = useSearchStudentMutation();
 
   useUpdateEffect(() => {
