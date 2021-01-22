@@ -24,6 +24,7 @@ import {
   StudentEmployedDataLoader,
   StudentLastProgramDataLoader,
   StudentListDataLoader,
+  StudentListFilterDataLoader,
   StudentProgramsDataLoader,
   StudentTermsDataLoader,
   StudentViaProgramsDataLoader,
@@ -151,8 +152,34 @@ export class StudentResolver {
     const filteredStudentList = studentList.filter(({ last_term }) => {
       return (last_term / 10 || 0) >= sinceNYear;
     });
-
     return filteredStudentList;
+  }
+
+  @Authorized()
+  @Query(() => [Student])
+  async students_filter(
+    @Ctx() { user }: IContext,
+    @Arg("program_id") program_id: string,
+    @Arg("curriculum") curriculum: string
+  ): Promise<PartialStudent[]> {
+    assertIsDefined(user, `Error on authorization context`);
+
+    const IsAuthorized = await UserProgramsTable()
+      .select("program")
+      .where({
+        email: user.email,
+        program: program_id,
+      })
+      .first();
+
+    assertIsDefined(IsAuthorized, STUDENT_LIST_UNAUTHORIZED);
+
+    const studentList = await StudentListFilterDataLoader.load({
+      program_id: program_id,
+      curriculum: curriculum,
+    });
+
+    return studentList;
   }
 
   @FieldResolver()

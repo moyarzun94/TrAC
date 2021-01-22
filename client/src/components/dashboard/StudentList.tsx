@@ -40,7 +40,10 @@ import { css } from "@emotion/react";
 import { IS_DEVELOPMENT } from "../../../constants";
 import { ConfigContext } from "../../context/Config";
 import { track } from "../../context/Tracking";
-import { useStudentsListQuery } from "../../graphql";
+import {
+  useStudentsListQuery,
+  useStudentsFilterListQuery,
+} from "../../graphql";
 import { marginZero, textAlignCenter } from "../../utils/cssConstants";
 import { useUser } from "../../utils/useUser";
 
@@ -143,6 +146,16 @@ export const StudentList: FC<{
     },
     skip: !program_id,
   });
+
+  const { data: dataStudenFiltertList } = useStudentsFilterListQuery({
+    variables: { program_id: "1708", curriculum: "2015" },
+  });
+  console.log(dataStudenFiltertList);
+  console.log(
+    useStudentsFilterListQuery({
+      variables: { program_id: "1708", curriculum: "2015" },
+    })
+  );
 
   const studentListData = useMemo(() => {
     return (

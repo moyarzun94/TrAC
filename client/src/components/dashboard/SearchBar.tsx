@@ -41,7 +41,7 @@ import {
   useGroupedActive,
 } from "../../context/DashboardInput";
 import { setTrackingData, track } from "../../context/Tracking";
-import { useMyProgramsQuery } from "../../graphql";
+import { useMyProgramsQuery, useStudentsFilterListQuery } from "../../graphql";
 import { marginLeft5px } from "../../utils/cssConstants";
 import { useUser } from "../../utils/useUser";
 import { Help } from "../Help";
@@ -85,11 +85,14 @@ export const SearchBar: FC<{
       DashboardInputActions.setChosenCurriculum(
         searchResult?.curriculums.sort().slice().reverse()[0]
       );
+      console.log(chosenCurriculum);
     }
+    console.log("dasdadasdadasdadas");
+    console.log(chosenCurriculum);
   }, [chosenCurriculum, searchResult?.curriculums]);
 
   const { user } = useUser();
-
+  console.log(chosenCurriculum);
   const isDirector = user?.type === UserType.Director;
 
   const {
@@ -433,17 +436,12 @@ export const SearchBar: FC<{
                   DashboardInputActions.setChosenCurriculum(
                     (selected as { label: string; value: string }).value
                   );
+                  console.log(chosenCurriculum);
+                  console.log("asdasdasdasda");
                 }}
                 placeholder="..."
                 noOptionsMessage={() => NO_CURRICULUMS_LABEL}
                 css={{ color: "black" }}
-              />
-              <Select
-                options={[
-                  { value: "Ingreso PACE", label: "Ingreso PACE" },
-                  { value: "Ingreso PSU", label: "Ingreso PSU" },
-                ]}
-                defaultInputValue={"Ingreso PACE"}
               />
             </Box>
           </Flex>
@@ -520,9 +518,7 @@ export const SearchBar: FC<{
                 icon
                 labelPosition="left"
                 primary
-                loading={isSearchLoading}
                 type="submit"
-                disabled={isSearchLoading || !program?.value}
                 onClick={async (ev) => {
                   if (program) {
                     ev.preventDefault();
@@ -543,20 +539,7 @@ export const SearchBar: FC<{
                         });
                         break;
                       }
-                      case "program": {
-                        setTrackingData({
-                          student: undefined,
-                        });
 
-                        setStudentIdShow("");
-                        track({
-                          action: "click",
-                          effect: "load-program",
-                          target: "search-button",
-                        });
-
-                        break;
-                      }
                       default: {
                         setTrackingData({
                           student: student_id,
