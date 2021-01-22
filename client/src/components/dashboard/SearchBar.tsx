@@ -38,6 +38,7 @@ import {
   setMock,
   useChosenCurriculum,
   useIsMockActive,
+  useGroupedActive,
 } from "../../context/DashboardInput";
 import { setTrackingData, track } from "../../context/Tracking";
 import { useMyProgramsQuery } from "../../graphql";
@@ -74,6 +75,7 @@ export const SearchBar: FC<{
 }> = memo(({ isSearchLoading, onSearch, searchResult, error }) => {
   const mock = useIsMockActive();
   const chosenCurriculum = useChosenCurriculum();
+  const groupedActive = useGroupedActive();
   useEffect(() => {
     if (
       (chosenCurriculum === undefined &&
@@ -184,6 +186,46 @@ export const SearchBar: FC<{
         alignItems="center"
         className="stack"
       >
+        <Button
+          icon
+          labelPosition="right"
+          primary
+          loading={isSearchLoading}
+          type="submit"
+          disabled={isSearchLoading || !program?.value}
+          onClick={async (ev) => {
+            if (program) {
+              ev.preventDefault();
+              const onSearchResult = await onSearch({
+                student_id,
+                program_id: program.value,
+              });
+              switch (onSearchResult) {
+                case "program": {
+                  setTrackingData({
+                    student: undefined,
+                  });
+
+                  setStudentIdShow("");
+                  track({
+                    action: "click",
+                    effect: "load-program",
+                    target: "search-button",
+                  });
+
+                  break;
+                }
+              }
+            }
+            DashboardInputActions.setGroupedActive(
+              groupedActive ? false : true
+            );
+          }}
+          size="medium"
+        >
+          <Icon name="search plus" />
+          {SEARCH_BUTTON_LABEL}
+        </Button>
         {user?.admin && <MockingMode />}
         {isDirector && user?.config?.SHOW_STUDENT_LIST && (
           <StudentList

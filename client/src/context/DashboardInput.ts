@@ -28,12 +28,13 @@ export const {
 export const {
   useStore: useDashboardInputState,
   actions: DashboardInputActions,
-  hooks: { useProgram, useStudent, useChosenCurriculum },
+  hooks: { useProgram, useStudent, useChosenCurriculum, useGroupedActive },
 } = createStore(
   {
     chosenCurriculum: undefined as string | undefined,
     program: undefined as string | undefined,
     student: undefined as string | undefined,
+    groupedActive: undefined as boolean | undefined,
   },
   {
     devName: "DashboardInput",
@@ -47,7 +48,11 @@ export const {
       useChosenCurriculum: ({ chosenCurriculum }) => {
         return chosenCurriculum;
       },
+      useGroupedActive: ({ groupedActive }) => {
+        return groupedActive;
+      },
     },
+
     actions: {
       setProgram: (program?: string) => (draft) => {
         draft.program = program;
@@ -57,6 +62,9 @@ export const {
       },
       setChosenCurriculum: (chosenCurriculum?: string) => (draft) => {
         draft.chosenCurriculum = chosenCurriculum;
+      },
+      setGroupedActive: (groupedActive?: boolean) => (draft) => {
+        draft.groupedActive = groupedActive;
       },
     },
   }
